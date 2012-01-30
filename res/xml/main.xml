@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+	<PreferenceCategory
+    	android:title="@string/category_version_title">
+	    <!-- Version -->
+	    <com.osarmod.omparts.VersionPreference 
+	        android:key="update"
+	        android:title="@string/update_title_head"
+	        android:summary="" />
+
+	    <EditTextPreference
+		android:key="version"
+	        android:title="@string/version_title_head"
+	        android:summary="version" />
+
+	</PreferenceCategory>
+</PreferenceScreen>
