@@ -1,29 +1,32 @@
 package com.osarmod.omparts;
 
 import android.os.Bundle;
-import android.preference.PreferenceActivity;
 import android.preference.Preference;
-import android.preference.EditTextPreference;
+import android.preference.PreferenceActivity;
 
-public class OMParts extends PreferenceActivity  {
+public class OMParts extends PreferenceActivity {
 
-    public static final String KEY_UPDATE = "update";
-    public static final String KEY_VERSION = "version";
+	public static final String KEY_UPDATE = "update";
+	public static final String KEY_VERSION = "version";
 
-    private VersionPreference m_updatePref;
-    private EditTextPreference m_versionPref;
+	private UpdatePreference m_updatePref;
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        addPreferencesFromResource(R.xml.main);
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		addPreferencesFromResource(R.xml.main);
 
-        m_updatePref = (VersionPreference) findPreference(KEY_UPDATE);
-        m_updatePref.setEnabled(true);
+		m_updatePref = (UpdatePreference) findPreference(KEY_UPDATE);
+		if (Utils.isUpdateAvailable()) {
+			m_updatePref.setEnabled(true);
+			m_updatePref.setSummary(getString(R.string.update_new_version) + " " + Utils.getVersionFromServer());
+		} else {
+			m_updatePref.setEnabled(false);
+			m_updatePref.setSummary(R.string.update_not_found);
+		}
 
-        m_versionPref = (EditTextPreference) findPreference(KEY_VERSION);
-        m_versionPref.setEnabled(false);
-		m_versionPref.setSummary(Utils.getVersion(getString(R.string.version_unknown)));
-    }
+		Preference p = findPreference(KEY_VERSION);
+		p.setSummary(Utils.getVersion(getString(R.string.version_unknown)));
+	}
 
 }

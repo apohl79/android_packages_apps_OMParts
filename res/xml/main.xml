@@ -4,15 +4,15 @@
 	<PreferenceCategory
     	android:title="@string/category_version_title">
 	    <!-- Version -->
-	    <com.osarmod.omparts.VersionPreference 
+	    <com.osarmod.omparts.UpdatePreference 
 	        android:key="update"
-	        android:title="@string/update_title_head"
-	        android:summary="" />
+	        android:title="@string/update_title_head"/>
 
-	    <EditTextPreference
-		android:key="version"
+	    <Preference
+			android:key="version"
 	        android:title="@string/version_title_head"
 	        android:summary="version" />
+	    <Preference android:title="Copyright" android:summary="Andreas Pohl &lt;apohl79@gmail.com&gt;" android:key="copyright"/>
 
 	</PreferenceCategory>
 </PreferenceScreen>
