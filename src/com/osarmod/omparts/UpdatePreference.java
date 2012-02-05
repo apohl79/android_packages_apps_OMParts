@@ -31,6 +31,7 @@ public class UpdatePreference extends DialogPreference {
 				builder.setMessage(m_ctx.getString(R.string.update_dl_failed)).setNeutralButton("OK", null)
 						.setCancelable(false);
 				builder.create();
+				m_wl.release();
 				break;
 			case DownloadThread.FINISHED:
 				m_pdlg.setMessage("Flashing...");
