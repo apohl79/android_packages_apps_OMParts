@@ -1,6 +1,7 @@
 package com.osarmod.omparts;
 
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 
@@ -14,6 +15,12 @@ public class OMParts extends PreferenceActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		// Allow a network connection to be established from the main thread. We
+		// need this from HC and ICS on.
+		StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitNetwork().build();
+		StrictMode.setThreadPolicy(policy);
+
 		addPreferencesFromResource(R.xml.main);
 
 		m_updatePref = (UpdatePreference) findPreference(KEY_UPDATE);
