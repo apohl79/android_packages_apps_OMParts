@@ -3,13 +3,11 @@ package com.osarmod.omparts;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URI;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
 
 import android.os.SystemProperties;
 import android.util.Log;
@@ -34,7 +32,7 @@ public class Utils {
 	}
 	
 	public static String getLocalPath() {
-		if (SystemProperties.getInt("persist.sys.vold.switchexternal", 0) == 1) {
+		if (SystemProperties.getInt("persist.sys.vold.switchexternal", 1) == 1) {
 			return "/mnt/sdcard/" + LOCAL_FILE;
 		} else {
 			return "/mnt/emmc/" + LOCAL_FILE;
@@ -57,20 +55,19 @@ public class Utils {
 		if (null != m_serverVersion) {
 			return m_serverVersion;
 		} else {
-			String url = SERVER + getOsarmodType() + "/VERSION";
-			Log.d(TAG, "getVersionFromServer: Reading version from " + url);
-			BufferedReader in = null;
+			URL url;
 			try {
-				HttpClient client = new DefaultHttpClient();
-				HttpGet request = new HttpGet();
-				request.setURI(new URI(url));
-				HttpResponse response = client.execute(request);
-				in = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+				url = new URL(SERVER + getOsarmodType() + "/VERSION");
+				Log.d(TAG, "getVersionFromServer: Reading version from " + url);
+				HttpURLConnection con = (HttpURLConnection) url.openConnection();
+				con.setRequestMethod("GET");
+				con.connect();
+				BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
 				m_serverVersion = in.readLine();
 				in.close();
 			} catch (Exception e) {
 				Log.e(TAG, "getVersionFromServer failed: " + e.getMessage());
-			}
+			}			
 		}
 		return m_serverVersion;
 	}
