@@ -14,4 +14,5 @@
     <string name="update_new_version">New version available:</string>
     <string name="update_downloading">Downloading update...</string>
     <string name="update_dl_failed">Download failed! Please try again later!</string>
+    <string name="update_su_failed">Failed to accuire root permissions!</string>
 </resources>

@@ -13,4 +13,5 @@
     <string name="update_new_version">Neue Version verfügbar:</string>
     <string name="update_downloading">Update wird heruntergeladen...</string>
     <string name="update_dl_failed">Download fehlgeschlagen! Bitte versuchen Sie es später erneut!</string>
+    <string name="update_su_failed">Erlangen von Root Rechten fehlgeschlagen!</string>
 </resources>
