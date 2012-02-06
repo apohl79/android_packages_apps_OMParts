@@ -3,11 +3,9 @@ package com.osarmod.omparts;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
 
 import android.os.SystemProperties;
 import android.util.Log;
@@ -25,12 +23,18 @@ public class Utils {
 		return SystemProperties.get("ro.osarmod.version", def);
 	}
 
-	public static String getOsarmodType() {
-		String type = SystemProperties.get("ro.osarmod.ostype", "cm7");
-		String device = SystemProperties.get("ro.osarmod.device", "galaxysmtd");
-		return device + "-" + type;
+	public static String getOSType() {
+		return SystemProperties.get("ro.osarmod.ostype", "cm7");
 	}
-	
+
+	public static String getDevice() {
+		return SystemProperties.get("ro.osarmod.device", "galaxysmtd");
+	}
+
+	public static String getOsarmodType() {
+		return getDevice() + "-" + getOSType();
+	}
+
 	public static String getLocalPath() {
 		if (SystemProperties.getInt("persist.sys.vold.switchexternal", 1) == 1) {
 			return "/mnt/sdcard/" + LOCAL_FILE;
@@ -38,11 +42,22 @@ public class Utils {
 			return "/mnt/emmc/" + LOCAL_FILE;
 		}
 	}
-	
+
+	public static String getFlashPath() {
+		String path = null;
+		String device = getDevice();
+		if (device.equals("galaxysmtd")) {
+			path = "/sdcard/" + LOCAL_FILE;
+		} else if (device.equals("wingray")) {
+			path = "/data/media/" + LOCAL_FILE;
+		}
+		return path;
+	}
+
 	public static String getServerPath() {
 		return SERVER + getOsarmodType() + "/" + REMOTE_FILE;
 	}
-	
+
 	public static boolean isUpdateAvailable() {
 		// Check if there is an update available
 		String instVer = Utils.getVersion("");
@@ -67,22 +82,22 @@ public class Utils {
 				in.close();
 			} catch (Exception e) {
 				Log.e(TAG, "getVersionFromServer failed: " + e.getMessage());
-			}			
+			}
 		}
 		return m_serverVersion;
 	}
 
-	public static void flashOtaPackage() {
+	public static boolean flashOtaPackage() {
 		// we need root permissions now
 		Process p;
+		boolean success = false;
 		try {
 			p = Runtime.getRuntime().exec("su");
 			Log.v(TAG, "Got root access");
 			// create command file for recovery
 			DataOutputStream out = new DataOutputStream(p.getOutputStream());
 			out.writeBytes("echo \"--wipe_cache\">/cache/recovery/command\n");
-			out.writeBytes("echo \"--update_package=/sdcard/" + Utils.LOCAL_FILE
-					+ "\">>/cache/recovery/command\n");
+			out.writeBytes("echo \"--update_package=" + getFlashPath() + "\">>/cache/recovery/command\n");
 			Log.v(TAG, "Created /cache/recovery/command");
 			Log.v(TAG, "Rebooting into recovery");
 			try {
@@ -92,8 +107,10 @@ public class Utils {
 			out.writeBytes("reboot recovery\n");
 			//out.writeBytes("exit\n");
 			out.flush();
+			success = true;
 		} catch (IOException e1) {
 			Log.e(TAG, "su failed: " + e1.getMessage());
 		}
+		return success;
 	}
 }
