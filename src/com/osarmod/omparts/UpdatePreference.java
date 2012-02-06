@@ -13,7 +13,7 @@ import android.util.AttributeSet;
 
 public class UpdatePreference extends DialogPreference {
 
-	//private static final String TAG = "OMParts.UpdatePreference";
+	// private static final String TAG = "OMParts.UpdatePreference";
 
 	Context m_ctx = null;
 	ProgressDialog m_pdlg = null;
@@ -21,13 +21,14 @@ public class UpdatePreference extends DialogPreference {
 
 	final Handler m_handler = new Handler() {
 		public void handleMessage(Message m) {
+			AlertDialog.Builder builder = null;
 			switch (m.what) {
 			case DownloadThread.PROGRESS:
 				m_pdlg.setProgress(m.arg1);
 				break;
 			case DownloadThread.FAILED:
 				m_pdlg.hide();
-				AlertDialog.Builder builder = new AlertDialog.Builder(m_ctx);
+				builder = new AlertDialog.Builder(m_ctx);
 				builder.setMessage(m_ctx.getString(R.string.update_dl_failed)).setNeutralButton("OK", null)
 						.setCancelable(false);
 				builder.create();
@@ -35,7 +36,14 @@ public class UpdatePreference extends DialogPreference {
 				break;
 			case DownloadThread.FINISHED:
 				m_pdlg.setMessage("Flashing...");
-				Utils.flashOtaPackage();
+				if (!Utils.flashOtaPackage()) {
+					m_pdlg.hide();
+					builder = new AlertDialog.Builder(m_ctx);
+					builder.setMessage(m_ctx.getString(R.string.update_su_failed)).setNeutralButton("OK", null)
+							.setCancelable(false);
+					builder.create();
+					m_wl.release();
+				}
 				break;
 			default:
 				break;
@@ -62,7 +70,7 @@ public class UpdatePreference extends DialogPreference {
 			PowerManager pm = (PowerManager) m_ctx.getSystemService(Context.POWER_SERVICE);
 			m_wl = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK, "OMParts");
 			m_wl.acquire();
-			
+
 			// Download new version
 			m_pdlg.setProgress(0);
 			m_pdlg.show();
