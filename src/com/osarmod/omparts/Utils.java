@@ -58,6 +58,10 @@ public class Utils {
 		return SERVER + getOsarmodType() + "/" + REMOTE_FILE;
 	}
 
+	public static String getChangelogUrl() {
+		return Utils.SERVER + getOsarmodType() + "/CHANGELOG_" + getOsarmodType() + "_" + getVersion("");
+	}
+
 	public static boolean isUpdateAvailable() {
 		// Check if there is an update available
 		String instVer = Utils.getVersion("");
@@ -105,7 +109,7 @@ public class Utils {
 			} catch (InterruptedException e) {
 			}
 			out.writeBytes("reboot recovery\n");
-			//out.writeBytes("exit\n");
+			// out.writeBytes("exit\n");
 			out.flush();
 			success = true;
 		} catch (IOException e1) {

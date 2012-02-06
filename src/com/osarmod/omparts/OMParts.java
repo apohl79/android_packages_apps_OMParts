@@ -1,16 +1,20 @@
 package com.osarmod.omparts;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.preference.Preference;
+import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 
 public class OMParts extends PreferenceActivity {
 
 	public static final String KEY_UPDATE = "update";
 	public static final String KEY_VERSION = "version";
+	public static final String KEY_CHANGELOG = "changelog";
 
-	private UpdatePreference m_updatePref;
+	private UpdatePreference m_updatePref = null;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -34,6 +38,16 @@ public class OMParts extends PreferenceActivity {
 
 		Preference p = findPreference(KEY_VERSION);
 		p.setSummary(Utils.getVersion(getString(R.string.version_unknown)));
+
+		p = findPreference(KEY_CHANGELOG);
+		p.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+			@Override
+			public boolean onPreferenceClick(Preference preference) {
+				Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(Utils.getChangelogUrl()));
+				startActivity(i);
+				return true;
+			}
+		});
 	}
 
 }
