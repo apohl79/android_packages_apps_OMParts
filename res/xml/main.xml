@@ -12,7 +12,8 @@
 			android:key="version"
 	        android:title="@string/version_title_head"
 	        android:summary="version" />
-	    <Preference android:key="changelog" android:title="ChangeLog" android:summary="@string/changelog_sum"/><Preference android:title="Copyright" android:summary="Andreas Pohl &lt;apohl79@gmail.com&gt;" android:key="copyright"/>
+	    <Preference android:key="changelog" android:title="ChangeLog" android:summary="@string/changelog_sum"/><CheckBoxPreference android:summary="@string/update_notify_sum" android:title="@string/update_notify_title" android:key="notification"/><Preference android:title="Copyright" android:summary="Andreas Pohl &lt;apohl79@gmail.com&gt;" android:key="copyright"/>
+	    
 	    
 
 	</PreferenceCategory>

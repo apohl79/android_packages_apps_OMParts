@@ -64,14 +64,18 @@ public class Utils {
 
 	public static boolean isUpdateAvailable() {
 		// Check if there is an update available
-		String instVer = Utils.getVersion("");
-		String serverVer = Utils.getVersionFromServer();
+		String instVer = getVersion("");
+		String serverVer = getVersionFromServer(true);
 		Log.v(TAG, "isUpdateAvailable: Installed: " + instVer + ", Server: " + serverVer);
 		return !instVer.equals(serverVer);
 	}
 
 	public static String getVersionFromServer() {
-		if (null != m_serverVersion) {
+		return getVersionFromServer(false);
+	}
+	
+	public static String getVersionFromServer(boolean force) {
+		if (!force && null != m_serverVersion) {
 			return m_serverVersion;
 		} else {
 			URL url;
@@ -117,4 +121,5 @@ public class Utils {
 		}
 		return success;
 	}
+
 }
