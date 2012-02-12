@@ -40,6 +40,7 @@ public class EventManager extends BroadcastReceiver {
 		NotificationManager nm = (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
 		Notification n = new Notification(R.drawable.ic_osarmod, ctx.getString(R.string.update_available),
 				System.currentTimeMillis());
+		n.flags = Notification.FLAG_AUTO_CANCEL;
 		Intent i = new Intent(ctx, OMParts.class);
 		PendingIntent pi = PendingIntent.getActivity(ctx, 0, i, PendingIntent.FLAG_CANCEL_CURRENT);
 		n.setLatestEventInfo(ctx, "OSARMOD", ctx.getString(R.string.update_available), pi);
