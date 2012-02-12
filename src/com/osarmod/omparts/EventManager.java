@@ -15,6 +15,7 @@ public class EventManager extends BroadcastReceiver {
 
 	private static final String TAG = "OMParts.EventManager";
 	private static final long INTERVAL = AlarmManager.INTERVAL_DAY;
+	private static final long START_DELAY = DateUtils.MINUTE_IN_MILLIS * 15;
 	private static final int NOTIFICATION_UPD_ID = 1;
 
 	@Override
@@ -49,8 +50,8 @@ public class EventManager extends BroadcastReceiver {
 		Intent intent = new Intent(ctx, EventManager.class);
 		PendingIntent pi = PendingIntent.getBroadcast(ctx, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 		AlarmManager am = (AlarmManager) ctx.getSystemService(Context.ALARM_SERVICE);
-		am.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + DateUtils.MINUTE_IN_MILLIS * 15,
-				INTERVAL, pi);
+		am.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + START_DELAY, INTERVAL,
+				pi);
 	}
 
 	public static void stopUpdateChecks(Context ctx) {
