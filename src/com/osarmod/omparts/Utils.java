@@ -59,7 +59,8 @@ public class Utils {
 	}
 
 	public static String getChangelogUrl() {
-		return Utils.SERVER + getOsarmodType() + "/CHANGELOG_" + getOsarmodType() + "_" + getVersion("");
+		return Utils.SERVER + "tools/changelog.cgi?osarmod_type=" + getOsarmodType() + "&version1="
+				+ getVersion("") + "&version2=" + getVersionFromServer();
 	}
 
 	public static boolean isUpdateAvailable() {
@@ -73,7 +74,7 @@ public class Utils {
 	public static String getVersionFromServer() {
 		return getVersionFromServer(false);
 	}
-	
+
 	public static String getVersionFromServer(boolean force) {
 		if (!force && null != m_serverVersion) {
 			return m_serverVersion;
