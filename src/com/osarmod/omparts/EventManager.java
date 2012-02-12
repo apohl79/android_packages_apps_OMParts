@@ -40,7 +40,7 @@ public class EventManager extends BroadcastReceiver {
 		Notification n = new Notification(R.drawable.ic_osarmod, ctx.getString(R.string.update_available),
 				System.currentTimeMillis());
 		Intent i = new Intent(ctx, OMParts.class);
-		PendingIntent pi = PendingIntent.getActivity(ctx, 0, i, PendingIntent.FLAG_UPDATE_CURRENT);
+		PendingIntent pi = PendingIntent.getActivity(ctx, 0, i, PendingIntent.FLAG_CANCEL_CURRENT);
 		n.setLatestEventInfo(ctx, "OSARMOD", ctx.getString(R.string.update_available), pi);
 		nm.notify(NOTIFICATION_UPD_ID, n);
 	}
@@ -49,7 +49,7 @@ public class EventManager extends BroadcastReceiver {
 		Intent intent = new Intent(ctx, EventManager.class);
 		PendingIntent pi = PendingIntent.getBroadcast(ctx, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 		AlarmManager am = (AlarmManager) ctx.getSystemService(Context.ALARM_SERVICE);
-		am.setInexactRepeating(AlarmManager.RTC, System.currentTimeMillis() + DateUtils.MINUTE_IN_MILLIS,
+		am.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + DateUtils.MINUTE_IN_MILLIS * 15,
 				INTERVAL, pi);
 	}
 
