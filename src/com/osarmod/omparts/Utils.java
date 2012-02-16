@@ -68,7 +68,7 @@ public class Utils {
 		String instVer = getVersion("");
 		String serverVer = getVersionFromServer(true);
 		Log.v(TAG, "isUpdateAvailable: Installed: " + instVer + ", Server: " + serverVer);
-		return !instVer.equals(serverVer);
+		return null != serverVer && !instVer.equals(serverVer);
 	}
 
 	public static String getVersionFromServer() {
