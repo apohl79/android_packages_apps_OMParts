@@ -30,7 +30,8 @@ public class EventManager extends BroadcastReceiver {
 			}
 		} else {
 			Log.d(TAG, "Checking for ROM update...");
-			if (Utils.isUpdateAvailable()) {
+			UpdateManager um = new UpdateManager();
+			if (um.isUpdateAvailable()) {
 				showNotification(ctx);
 			}
 		}

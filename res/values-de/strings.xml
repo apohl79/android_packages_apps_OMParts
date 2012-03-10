@@ -18,4 +18,9 @@
     <string name="update_available">ROM Update verfügbar</string>
     <string name="update_notify_title">Nofification </string>
     <string name="update_notify_sum">Zeige eine Notification bei verfügbaren Aktualisierungen an.</string>
+    <string name="category_notification_title">Benachrichtigung</string>
+    <string name="category_storage_title">Speicher</string>
+    <string name="sdcard_summary_on">Externen SD Karte unter /mnt/sdcard mounten (Neustart erforderlich)</string>
+    <string name="sdcard_summary_off">Interne SD Karte unter /mnt/sdcard mounten (Neustart erforderlich)</string><string name="sdcard_title">SD Karte</string>
+    
 </resources>

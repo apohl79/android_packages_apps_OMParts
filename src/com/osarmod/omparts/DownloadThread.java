@@ -13,27 +13,29 @@ import android.os.Message;
 import android.util.Log;
 
 public class DownloadThread implements Runnable {
-
 	private static final String TAG = "OMParts.DownloadThread";
-	
 	public static final int PROGRESS = 0;
 	public static final int FINISHED = 1;
 	public static final int FAILED = 2;
 	
 	Handler m_handler = null;
+	String m_serverPath = null;
+	String m_localPath = null;
 	
-	public DownloadThread(Handler h) {
+	public DownloadThread(Handler h, String serverPath, String localPath) {
 		m_handler = h;
+		m_serverPath = serverPath;
+		m_localPath = localPath;
 	}
-	
+
 	/**
 	 * Download the ota package to the external sdcard.
 	 */
 	public void run() {
 		File file = null;
 		try {
-			URL url = new URL(Utils.getServerPath());
-			file = new File(Utils.getLocalPath());
+			URL url = new URL(m_serverPath);
+			file = new File(m_localPath);
 
 			URLConnection con = url.openConnection();
 			int len = con.getContentLength();

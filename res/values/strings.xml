@@ -19,4 +19,10 @@
     <string name="update_available">ROM update available</string>
     <string name="update_notify_title">Notification</string>
     <string name="update_notify_sum">Show a notification if an update is available.</string>
+    <string name="category_notification_title">Notification</string>
+    <string name="category_copy_title">Copyright</string>
+    <string name="category_storage_title">Storage</string>
+    <string name="sdcard_summary_on">Mount external SD card at /mnt/sdcard (Reboot required)</string>
+    <string name="sdcard_summary_off">Mount internal SD card at /mnt/sdcard (Reboot required)</string><string name="sdcard_title">SD card</string>
+    
 </resources>
