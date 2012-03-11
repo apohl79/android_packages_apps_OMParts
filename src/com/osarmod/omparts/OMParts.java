@@ -88,7 +88,7 @@ public class OMParts extends PreferenceActivity {
 		});
 
 		final CheckBoxPreference cbpSdcard = (CheckBoxPreference) findPreference(KEY_SDCARD);
-		if (OMProperties.getOSType().equals("cm9")) {
+		if (OMProperties.getOsarmodType().equals("galaxysmtd-cm9")) {
 			cbpSdcard.setChecked(OMProperties.getSwitchSdCard());
 			cbpSdcard.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 				@Override
