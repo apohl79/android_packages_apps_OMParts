@@ -19,6 +19,7 @@ public class UpdateManager {
 	private static final String TAG = "OMParts.UpdateManager";
 	public static final String SERVER = "http://android.diepohls.com/";
 	public static final String REMOTE_FILE = "latest";
+	public static final String REMOTE_FILE_DEV = "latest_dev";
 	public static final String LOCAL_FILE = "osarmod-ota.zip";
 
 	private static String m_serverVersion = null;
@@ -78,7 +79,11 @@ public class UpdateManager {
 			// Download new version
 			m_pdlg.setProgress(0);
 			m_pdlg.show();
-			String srvPath = SERVER + OMProperties.getOsarmodType() + "/" + REMOTE_FILE;
+
+			SharedPreferences prefs = m_ctx.getSharedPreferences("osarmod", Context.MODE_PRIVATE);
+			boolean devbuilds = prefs.getInt(OMParts.KEY_DEVBUILDS, 0) == 1;
+			String srvPath = SERVER + OMProperties.getOsarmodType() + "/"
+					+ (devbuilds ? REMOTE_FILE_DEV : REMOTE_FILE);
 			String locPath = OMProperties.getSdCard() + "/" + LOCAL_FILE;
 			DownloadThread worker = new DownloadThread(m_handler, srvPath, locPath);
 			Thread t = new Thread(worker);
@@ -88,7 +93,7 @@ public class UpdateManager {
 
 	public String getChangelogUrl() {
 		SharedPreferences prefs = m_ctx.getSharedPreferences("osarmod", Context.MODE_PRIVATE);
-		boolean devbuilds = prefs.getInt(OMParts.KEY_DEVBUILDS, 1) == 1;
+		boolean devbuilds = prefs.getInt(OMParts.KEY_DEVBUILDS, 0) == 1;
 		return SERVER + "tools/changelog.cgi?osarmod_type=" + OMProperties.getOsarmodType() + "&version1="
 				+ OMProperties.getVersion("") + "&version2=" + getVersionFromServer(devbuilds);
 	}
@@ -112,7 +117,7 @@ public class UpdateManager {
 				if (!serverVer.equals(parts[0])) {
 					upd = serverVer;
 				} else if (!instVer.equals(serverVerDev)) {
-					upd = serverVerDev;	
+					upd = serverVerDev;
 				}
 			}
 		} else {
