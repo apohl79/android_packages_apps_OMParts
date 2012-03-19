@@ -8,6 +8,7 @@ import java.net.URL;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Message;
 import android.os.PowerManager;
@@ -25,15 +26,8 @@ public class UpdateManager {
 	ProgressDialog m_pdlg = null;
 	WakeLock m_wl = null;
 
-	public UpdateManager() {
-	}
-
 	public UpdateManager(Context context) {
 		m_ctx = context;
-		m_pdlg = new ProgressDialog(m_ctx);
-		m_pdlg.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-		m_pdlg.setMessage(m_ctx.getString(R.string.update_downloading));
-		m_pdlg.setCancelable(false);
 	}
 
 	final Handler m_handler = new Handler() {
@@ -71,6 +65,11 @@ public class UpdateManager {
 
 	public void startUpdate() {
 		if (m_ctx != null) {
+			m_pdlg = new ProgressDialog(m_ctx);
+			m_pdlg.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+			m_pdlg.setMessage(m_ctx.getString(R.string.update_downloading));
+			m_pdlg.setCancelable(false);
+
 			// prevent the device from sleeping
 			PowerManager pm = (PowerManager) m_ctx.getSystemService(Context.POWER_SERVICE);
 			m_wl = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK, "OMParts");
@@ -88,29 +87,58 @@ public class UpdateManager {
 	}
 
 	public String getChangelogUrl() {
+		SharedPreferences prefs = m_ctx.getSharedPreferences("osarmod", Context.MODE_PRIVATE);
+		boolean devbuilds = prefs.getInt(OMParts.KEY_DEVBUILDS, 1) == 1;
 		return SERVER + "tools/changelog.cgi?osarmod_type=" + OMProperties.getOsarmodType() + "&version1="
-				+ OMProperties.getVersion("") + "&version2=" + getVersionFromServer();
+				+ OMProperties.getVersion("") + "&version2=" + getVersionFromServer(devbuilds);
 	}
 
-	public boolean isUpdateAvailable() {
+	public String getUpdateAvailable() {
 		// Check if there is an update available
 		String instVer = OMProperties.getVersion("");
-		String serverVer = getVersionFromServer(true);
-		Log.v(TAG, "isUpdateAvailable: Installed: " + instVer + ", Server: " + serverVer);
-		return null != serverVer && !instVer.equals(serverVer);
+		String serverVer = getVersionFromServer(true, false);
+		if (null == serverVer) {
+			return null;
+		}
+		String serverVerDev = null;
+		SharedPreferences prefs = m_ctx.getSharedPreferences("osarmod", Context.MODE_PRIVATE);
+		boolean devbuilds = prefs.getInt(OMParts.KEY_DEVBUILDS, 0) == 1;
+		String upd = null;
+		if (devbuilds) {
+			serverVerDev = getVersionFromServer(true, true);
+			if (null != serverVerDev) {
+				String parts[] = serverVerDev.split("-");
+				// check if there is a newer stable build
+				if (!serverVer.equals(parts[0])) {
+					upd = serverVer;
+				} else if (!instVer.equals(serverVerDev)) {
+					upd = serverVerDev;	
+				}
+			}
+		} else {
+			if (!instVer.equals(serverVer)) {
+				upd = serverVer;
+			}
+		}
+		Log.v(TAG, "isUpdateAvailable: Installed: " + instVer + ", Server: " + upd);
+		return upd;
 	}
 
-	public String getVersionFromServer() {
-		return getVersionFromServer(false);
+	public String getVersionFromServer(boolean devbuilds) {
+		return getVersionFromServer(false, devbuilds);
 	}
 
-	public String getVersionFromServer(boolean force) {
+	public String getVersionFromServer(boolean force, boolean devbuilds) {
 		if (!force && null != m_serverVersion) {
 			return m_serverVersion;
 		} else {
 			URL url;
 			try {
-				url = new URL(SERVER + OMProperties.getOsarmodType() + "/VERSION");
+				if (devbuilds) {
+					url = new URL(SERVER + OMProperties.getOsarmodType() + "/VERSION_DEV");
+				} else {
+					url = new URL(SERVER + OMProperties.getOsarmodType() + "/VERSION");
+				}
 				Log.d(TAG, "getVersionFromServer: Reading version from " + url);
 				HttpURLConnection con = (HttpURLConnection) url.openConnection();
 				con.setRequestMethod("GET");

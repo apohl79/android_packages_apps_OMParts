@@ -24,5 +24,7 @@
     <string name="category_storage_title">Storage</string>
     <string name="sdcard_summary_on">Mount external SD card at /mnt/sdcard (Reboot required)</string>
     <string name="sdcard_summary_off">Mount internal SD card at /mnt/sdcard (Reboot required)</string><string name="sdcard_title">SD card</string>
+    <string name="devbuilds_title">Development Builds</string>
+    <string name="devbuilds_sum">Include development builds in update checks.</string>
     
 </resources>

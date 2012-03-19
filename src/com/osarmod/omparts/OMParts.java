@@ -21,6 +21,7 @@ public class OMParts extends PreferenceActivity {
 	public static final String KEY_CHANGELOG = "changelog";
 	public static final String KEY_NOTIFICATION = "notification";
 	public static final String KEY_SDCARD = "sdcard";
+	public static final String KEY_DEVBUILDS = "devbuilds";
 
 	private UpdatePreference m_updatePref = null;
 	private UpdateManager m_um = null;
@@ -37,7 +38,7 @@ public class OMParts extends PreferenceActivity {
 		addPreferencesFromResource(R.xml.main);
 
 		m_updatePref = (UpdatePreference) findPreference(KEY_UPDATE);
-		m_um = new UpdateManager();
+		m_um = new UpdateManager(this);
 		checkForUpdate();
 
 		Preference p = findPreference(KEY_VERSION);
@@ -87,6 +88,23 @@ public class OMParts extends PreferenceActivity {
 			}
 		});
 
+		boolean devbuilds = prefs.getInt(KEY_DEVBUILDS, 0) == 1;
+		final CheckBoxPreference cbpDevbuilds = (CheckBoxPreference) findPreference(KEY_DEVBUILDS);
+		cbpDevbuilds.setChecked(devbuilds);
+		cbpDevbuilds.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+			@Override
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				Boolean b = (Boolean) newValue;
+				cbpDevbuilds.setChecked(b);
+				int val = b ? 1 : 0;
+				SharedPreferences prefs = getSharedPreferences("osarmod", Context.MODE_PRIVATE);
+				Editor e = prefs.edit();
+				e.putInt(KEY_DEVBUILDS, val);
+				e.commit();
+				return false;
+			}
+		});
+
 		final CheckBoxPreference cbpSdcard = (CheckBoxPreference) findPreference(KEY_SDCARD);
 		if (OMProperties.getOsarmodType().equals("galaxysmtd-cm9")) {
 			cbpSdcard.setChecked(OMProperties.getSwitchSdCard());
@@ -105,10 +123,10 @@ public class OMParts extends PreferenceActivity {
 	}
 
 	private void checkForUpdate() {
-		if (m_um.isUpdateAvailable()) {
+		String newVersion = m_um.getUpdateAvailable();
+		if (null != newVersion) {
 			m_updatePref.setEnabled(true);
-			m_updatePref.setSummary(getString(R.string.update_new_version) + " "
-					+ m_um.getVersionFromServer());
+			m_updatePref.setSummary(getString(R.string.update_new_version) + " " + newVersion);
 		} else {
 			m_updatePref.setEnabled(false);
 			m_updatePref.setSummary(R.string.update_not_found);

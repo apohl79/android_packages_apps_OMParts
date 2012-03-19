@@ -12,7 +12,8 @@
 			android:key="version"
 	        android:title="@string/version_title_head"
 	        android:summary="version" />
-	    <Preference android:key="changelog" android:title="ChangeLog" android:summary="@string/changelog_sum"/>
+	    <Preference android:key="changelog" android:title="ChangeLog" android:summary="@string/changelog_sum"/><CheckBoxPreference android:key="devbuilds" android:summary="@string/devbuilds_sum" android:title="@string/devbuilds_title" />
+	    
 	</PreferenceCategory>
 	<PreferenceCategory android:title="@string/category_notification_title"><CheckBoxPreference android:summary="@string/update_notify_sum" android:title="@string/update_notify_title" android:key="notification" /></PreferenceCategory>
 	<PreferenceCategory android:title="@string/category_storage_title">
