@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.preference.CheckBoxPreference;
+import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
@@ -22,6 +23,7 @@ public class OMParts extends PreferenceActivity {
 	public static final String KEY_NOTIFICATION = "notification";
 	public static final String KEY_SDCARD = "sdcard";
 	public static final String KEY_DEVBUILDS = "devbuilds";
+	public static final String KEY_BLX = "blx";
 
 	private UpdatePreference m_updatePref = null;
 	private UpdateManager m_um = null;
@@ -64,6 +66,7 @@ public class OMParts extends PreferenceActivity {
 		final Context ctx = this;
 
 		SharedPreferences prefs = getSharedPreferences("osarmod", Context.MODE_PRIVATE);
+		
 		boolean notifyme = prefs.getInt(KEY_NOTIFICATION, 1) == 1;
 		final CheckBoxPreference cbpNotify = (CheckBoxPreference) findPreference(KEY_NOTIFICATION);
 		cbpNotify.setChecked(notifyme);
@@ -119,6 +122,13 @@ public class OMParts extends PreferenceActivity {
 			});
 		} else {
 			cbpSdcard.setEnabled(false);
+		}
+		
+		ListPreference blxPref = (ListPreference) findPreference(KEY_BLX);
+		blxPref.setEnabled(Blx.isSupported());
+		if (Blx.isSupported()) {
+			blxPref.setValue(prefs.getString(KEY_BLX, "96"));
+			blxPref.setOnPreferenceChangeListener(new Blx(this));
 		}
 	}
 

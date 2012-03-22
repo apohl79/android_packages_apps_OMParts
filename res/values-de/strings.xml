@@ -19,10 +19,17 @@
     <string name="update_notify_title">Nofification </string>
     <string name="update_notify_sum">Zeige eine Notification bei verfügbaren Aktualisierungen an.</string>
     <string name="category_notification_title">Benachrichtigung</string>
-    <string name="category_storage_title">Speicher</string>
+    <string name="category_tuning_title">Feineinstellung</string>
     <string name="sdcard_summary_on">Externen SD Karte unter /mnt/sdcard mounten (Neustart erforderlich)</string>
     <string name="sdcard_summary_off">Interne SD Karte unter /mnt/sdcard mounten (Neustart erforderlich)</string><string name="sdcard_title">SD Karte</string>
     <string name="devbuilds_title">Entwicklungsversionen</string>
     <string name="devbuilds_sum">Entwicklungsversionen einbeziehen</string>
+    <string name="blx_title">Ladebegrenzung des Akkus</string>
+    <string name="blx_sum">Setzen einer Ladebegrenzung zur Verlängerung der Akkulebensdauer. Dies verlängert NICHT den Ladezyklus sondern nur die Lebensdauer der Batterie.</string>
+    <string-array name="blx_entries">
+        <item >Max</item>
+        <item >90% (empfohlen)</item>
+        <item >80%</item>
+    </string-array>
     
 </resources>

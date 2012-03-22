@@ -21,10 +21,22 @@
     <string name="update_notify_sum">Show a notification if an update is available.</string>
     <string name="category_notification_title">Notification</string>
     <string name="category_copy_title">Copyright</string>
-    <string name="category_storage_title">Storage</string>
+    <string name="category_tuning_title">Tuning</string>
     <string name="sdcard_summary_on">Mount external SD card at /mnt/sdcard (Reboot required)</string>
     <string name="sdcard_summary_off">Mount internal SD card at /mnt/sdcard (Reboot required)</string><string name="sdcard_title">SD card</string>
     <string name="devbuilds_title">Development Builds</string>
     <string name="devbuilds_sum">Include development builds in update checks.</string>
+    <string name="blx_title">Battery Charging Limit</string>
+    <string name="blx_sum">Set a charging limit to extend the lifetime of the battery. This will NOT extend charging cycles. It should just extend the battery life.</string>
+    <string-array name="blx_entries">
+        <item >Max</item>
+        <item >90% (recommended)</item>
+        <item >80%</item>
+    </string-array>
+    <string-array name="blx_values">
+        <item >96</item>
+        <item >90</item>
+        <item >80</item>
+    </string-array>
     
 </resources>

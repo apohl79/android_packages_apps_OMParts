@@ -28,6 +28,9 @@ public class EventManager extends BroadcastReceiver {
 				Log.d(TAG, "Boot complete: starting update checks.");
 				startUpdateChecks(ctx);
 			}
+			if (Blx.isSupported()) {
+				Blx.setChargingLimit(prefs.getString(OMParts.KEY_BLX, "96"));
+			}
 		} else {
 			Log.d(TAG, "Checking for ROM update...");
 			UpdateManager um = new UpdateManager(ctx);
