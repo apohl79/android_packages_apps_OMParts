@@ -21,7 +21,7 @@
 		<ListPreference android:title="@string/blx_title" android:key="blx" android:summary="@string/blx_sum" android:dialogTitle="@string/blx_title" android:entries="@array/blx_entries" android:entryValues="@array/blx_values"/>
 	</PreferenceCategory>
 	<PreferenceCategory android:title="@string/category_copy_title">
-	    <Preference android:title="Copyright" android:summary="Andreas Pohl &lt;apohl79@gmail.com&gt;" android:key="copyright" />
+	    <Preference android:title="Andreas Pohl" android:summary="&lt;apohl79@gmail.com&gt;" android:key="copyright" />
  	</PreferenceCategory>
 	
 </PreferenceScreen>
