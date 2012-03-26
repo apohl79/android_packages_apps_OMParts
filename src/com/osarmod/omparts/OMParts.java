@@ -4,8 +4,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.os.StrictMode;
 import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
@@ -27,7 +30,25 @@ public class OMParts extends PreferenceActivity {
 
 	private UpdatePreference m_updatePref = null;
 	private UpdateManager m_um = null;
+	private String m_newVersion = null;
+	
+	final Handler m_handler = new Handler() {
+		public void handleMessage(Message m) {
+			if (m.arg1 == 1) {
+				m_updatePref.setEnabled(true);
+				m_updatePref.setSummary(getString(R.string.update_new_version) + " " + m_newVersion);
+			} else {
+				m_updatePref.setEnabled(false);
+				m_updatePref.setSummary(R.string.update_not_found);
+			}
+		}
+	};
 
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+	  super.onConfigurationChanged(newConfig);
+	}
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -133,13 +154,18 @@ public class OMParts extends PreferenceActivity {
 	}
 
 	private void checkForUpdate() {
-		String newVersion = m_um.getUpdateAvailable();
-		if (null != newVersion) {
-			m_updatePref.setEnabled(true);
-			m_updatePref.setSummary(getString(R.string.update_new_version) + " " + newVersion);
-		} else {
-			m_updatePref.setEnabled(false);
-			m_updatePref.setSummary(R.string.update_not_found);
-		}
+		m_updatePref.setEnabled(false);
+		m_updatePref.setSummary(R.string.update_check);
+		Thread t = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				m_newVersion = m_um.getUpdateAvailable();
+				Message m = new Message();
+				m.arg1 = (null == m_newVersion)? 0: 1;
+				m_handler.sendMessage(m);
+			}
+		});
+		Log.d(TAG, "Starting thread");
+		t.start();
 	}
 }

@@ -31,5 +31,6 @@
         <item >90% (empfohlen)</item>
         <item >80%</item>
     </string-array>
+    <string name="update_check">Auf Aktualisierung prüfen...</string>
     
 </resources>

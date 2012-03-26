@@ -38,5 +38,6 @@
         <item >90</item>
         <item >80</item>
     </string-array>
+    <string name="update_check">Checking for new version...</string>
     
 </resources>

@@ -99,36 +99,43 @@ public class UpdateManager {
 	}
 
 	public String getUpdateAvailable() {
-		// Check if there is an update available
-		String instVer = OMProperties.getVersion("");
-		String serverVer = getVersionFromServer(true, false);
-		if (null == serverVer) {
-			return null;
-		}
-		String serverVerDev = null;
 		SharedPreferences prefs = m_ctx.getSharedPreferences("osarmod", Context.MODE_PRIVATE);
 		boolean devbuilds = prefs.getInt(OMParts.KEY_DEVBUILDS, 0) == 1;
-		String upd = null;
-		if (devbuilds) {
-			serverVerDev = getVersionFromServer(true, true);
-			if (null != serverVerDev) {
-				String parts[] = serverVerDev.split("-");
-				// check if there is a newer stable build
-				if (!serverVer.equals(parts[0])) {
-					upd = serverVer;
-				} else if (!instVer.equals(serverVerDev)) {
-					upd = serverVerDev;
-				}
-			}
-		} else {
-			if (!instVer.equals(serverVer)) {
-				upd = serverVer;
-			}
-		}
-		Log.v(TAG, "isUpdateAvailable: Installed: " + instVer + ", Server: " + upd);
-		return upd;
-	}
+		String installed = OMProperties.getVersion("");
+		String server = getVersionFromServer(true, false);
+		String serverDev = devbuilds? getVersionFromServer(true, true): null;
+		String serverDevBase = devbuilds? getBaseVersion(serverDev): null;
 
+		if (null == server || (devbuilds && null == serverDev)) {
+			return null;
+		}
+
+		String checkVersion = server;
+		if (devbuilds && !isNewerVersion(server, serverDevBase)) {
+			checkVersion = serverDev;
+		}
+
+		if (isNewerVersion(checkVersion, installed)) {
+			return checkVersion;
+		}
+		
+		return null;
+	}
+	
+	private static String getBaseVersion(String v) {
+		String parts[] = v.split("-");
+		return parts[0];
+	}
+	
+	private static boolean isNewerVersion(String ver1, String ver2) {
+		ver1 = ver1.replace(".", "");
+		ver1 = ver1.replace("-dev", "");
+		ver2 = ver2.replace(".", "");
+		ver2 = ver2.replace("-dev", "");
+		Log.d(TAG, "ver1=" + ver1 + " ver2=" + ver2);
+		return new Integer(ver1) > new Integer(ver2);
+	}
+	
 	public String getVersionFromServer(boolean devbuilds) {
 		return getVersionFromServer(false, devbuilds);
 	}
