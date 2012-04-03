@@ -45,11 +45,13 @@ public class OMParts extends PreferenceActivity {
 	};
 
 	@Override
+	public Object onRetainNonConfigurationInstance() {
+		return m_um;
+	}
+		
+	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
 	  super.onConfigurationChanged(newConfig);
-	  if (null != UpdateManager.m_pdlg) {
-		  UpdateManager.m_pdlg.show();
-	  }
 	}
 	
 	@Override
@@ -62,9 +64,16 @@ public class OMParts extends PreferenceActivity {
 		StrictMode.setThreadPolicy(policy);
 
 		addPreferencesFromResource(R.xml.main);
+		
+		Object ret = getLastNonConfigurationInstance();
+		if (null != ret) {
+			m_um = (UpdateManager) ret;
+			m_um.showProgress();
+		} else {
+			m_um = new UpdateManager(this);
+		}
 
 		m_updatePref = (UpdatePreference) findPreference(KEY_UPDATE);
-		m_um = new UpdateManager(this);
 		checkForUpdate();
 
 		Preference p = findPreference(KEY_VERSION);

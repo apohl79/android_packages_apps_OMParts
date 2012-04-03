@@ -24,7 +24,7 @@ public class UpdateManager {
 
 	private static String m_serverVersion = null;
 	private Context m_ctx = null;
-	public static ProgressDialog m_pdlg = null;
+	private ProgressDialog m_pdlg = null;
 	private WakeLock m_wl = null;
 
 	public UpdateManager(Context context) {
@@ -51,7 +51,6 @@ public class UpdateManager {
 				Flasher f = new Flasher(LOCAL_FILE);
 				if (!f.flashOtaPackage()) {
 					m_pdlg.hide();
-					m_pdlg = null;
 					builder = new AlertDialog.Builder(m_ctx);
 					builder.setMessage(m_ctx.getString(R.string.update_su_failed))
 							.setNeutralButton("OK", null).setCancelable(false);
@@ -65,11 +64,14 @@ public class UpdateManager {
 		}
 	};
 
+	public void showProgress() {
+		if (null != m_pdlg) {
+			m_pdlg.show();
+		}
+	}
 	public void startUpdate() {
 		if (m_ctx != null) {
-			if (null == m_pdlg) {
-				m_pdlg = new ProgressDialog(m_ctx);
-			}
+			m_pdlg = new ProgressDialog(m_ctx);
 			m_pdlg.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
 			m_pdlg.setMessage(m_ctx.getString(R.string.update_downloading));
 			m_pdlg.setCancelable(false);
