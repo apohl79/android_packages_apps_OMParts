@@ -47,6 +47,9 @@ public class OMParts extends PreferenceActivity {
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
 	  super.onConfigurationChanged(newConfig);
+	  if (null != UpdateManager.m_pdlg) {
+		  UpdateManager.m_pdlg.show();
+	  }
 	}
 	
 	@Override

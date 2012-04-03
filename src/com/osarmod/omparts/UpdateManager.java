@@ -23,9 +23,9 @@ public class UpdateManager {
 	public static final String LOCAL_FILE = "osarmod-ota.zip";
 
 	private static String m_serverVersion = null;
-	Context m_ctx = null;
-	ProgressDialog m_pdlg = null;
-	WakeLock m_wl = null;
+	private Context m_ctx = null;
+	public static ProgressDialog m_pdlg = null;
+	private WakeLock m_wl = null;
 
 	public UpdateManager(Context context) {
 		m_ctx = context;
@@ -51,6 +51,7 @@ public class UpdateManager {
 				Flasher f = new Flasher(LOCAL_FILE);
 				if (!f.flashOtaPackage()) {
 					m_pdlg.hide();
+					m_pdlg = null;
 					builder = new AlertDialog.Builder(m_ctx);
 					builder.setMessage(m_ctx.getString(R.string.update_su_failed))
 							.setNeutralButton("OK", null).setCancelable(false);
@@ -66,7 +67,9 @@ public class UpdateManager {
 
 	public void startUpdate() {
 		if (m_ctx != null) {
-			m_pdlg = new ProgressDialog(m_ctx);
+			if (null == m_pdlg) {
+				m_pdlg = new ProgressDialog(m_ctx);
+			}
 			m_pdlg.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
 			m_pdlg.setMessage(m_ctx.getString(R.string.update_downloading));
 			m_pdlg.setCancelable(false);
@@ -103,30 +106,34 @@ public class UpdateManager {
 		boolean devbuilds = prefs.getInt(OMParts.KEY_DEVBUILDS, 0) == 1;
 		String installed = OMProperties.getVersion("");
 		String server = getVersionFromServer(true, false);
-		String serverDev = devbuilds? getVersionFromServer(true, true): null;
-		String serverDevBase = devbuilds? getBaseVersion(serverDev): null;
+		String serverDev = devbuilds ? getVersionFromServer(true, true) : null;
+		String serverDevBase = devbuilds ? getBaseVersion(serverDev) : null;
 
 		if (null == server || (devbuilds && null == serverDev)) {
 			return null;
 		}
 
 		String checkVersion = server;
-		if (devbuilds && !isNewerVersion(server, serverDevBase)) {
-			checkVersion = serverDev;
+		if (devbuilds) {
+			if (isNewerVersion(server, serverDevBase)) {
+				return server;
+			} else {
+				checkVersion = serverDev;
+			}
 		}
 
 		if (isNewerVersion(checkVersion, installed)) {
 			return checkVersion;
 		}
-		
+
 		return null;
 	}
-	
+
 	private static String getBaseVersion(String v) {
 		String parts[] = v.split("-");
 		return parts[0];
 	}
-	
+
 	private static boolean isNewerVersion(String ver1, String ver2) {
 		ver1 = ver1.replace(".", "");
 		ver1 = ver1.replace("-dev", "");
@@ -135,7 +142,7 @@ public class UpdateManager {
 		Log.d(TAG, "ver1=" + ver1 + " ver2=" + ver2);
 		return new Integer(ver1) > new Integer(ver2);
 	}
-	
+
 	public String getVersionFromServer(boolean devbuilds) {
 		return getVersionFromServer(false, devbuilds);
 	}
