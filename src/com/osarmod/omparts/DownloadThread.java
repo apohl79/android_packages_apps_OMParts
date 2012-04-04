@@ -21,11 +21,16 @@ public class DownloadThread implements Runnable {
 	Handler m_handler = null;
 	String m_serverPath = null;
 	String m_localPath = null;
+	boolean m_term = false;
 	
 	public DownloadThread(Handler h, String serverPath, String localPath) {
 		m_handler = h;
 		m_serverPath = serverPath;
 		m_localPath = localPath;
+	}
+
+	public void terminate() {
+		m_term = true;
 	}
 
 	/**
@@ -61,13 +66,18 @@ public class DownloadThread implements Runnable {
 						m.arg1 = (int) perc;
 						m_handler.sendMessage(m);
 						last_perc = perc;
+						Log.d(TAG, perc + "% downloaded");
 					}
-				} while (total < len);
+				} while (total < len && !m_term);
 				in.close();
 				out.close();
-				Log.d(TAG, len + " bytes downloaded");
+				Log.d(TAG, total + " bytes downloaded");
 			}
-			m_handler.sendEmptyMessage(FINISHED);
+			if (m_term) {
+				m_handler.sendEmptyMessage(FAILED);
+			} else {
+				m_handler.sendEmptyMessage(FINISHED);
+			}
 		} catch (IOException e) {
 			Log.e(TAG, e.getMessage());
 			if (null != file && file.exists()) {

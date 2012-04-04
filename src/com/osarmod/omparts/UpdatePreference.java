@@ -16,7 +16,10 @@ public class UpdatePreference extends DialogPreference {
 		setDialogMessage(R.string.update_inst);
 		setPositiveButtonText(R.string.update_yes);
 		setNegativeButtonText(R.string.update_no);
-		m_um = new UpdateManager(context);
+	}
+
+	public void setUpdateManager(UpdateManager um) {
+		m_um = um;
 	}
 
 	@Override

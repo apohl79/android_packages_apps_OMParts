@@ -44,16 +44,20 @@ public class OMParts extends PreferenceActivity {
 		}
 	};
 
-	@Override
-	public Object onRetainNonConfigurationInstance() {
-		return m_um;
-	}
-		
-	@Override
-	public void onConfigurationChanged(Configuration newConfig) {
-	  super.onConfigurationChanged(newConfig);
-	}
-	
+	@Override  
+	protected void onPause() {
+		Log.d(TAG, "onPause called");  
+		super.onPause();
+		m_um.dismissProgress();
+	}  
+
+	@Override  
+	protected void onResume() {
+		Log.d(TAG, "onResume called");  
+		super.onResume();
+		m_um.showProgress();
+	}  
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -64,17 +68,27 @@ public class OMParts extends PreferenceActivity {
 		StrictMode.setThreadPolicy(policy);
 
 		addPreferencesFromResource(R.xml.main);
-		
-		Object ret = getLastNonConfigurationInstance();
-		if (null != ret) {
-			m_um = (UpdateManager) ret;
-			m_um.showProgress();
-		} else {
-			m_um = new UpdateManager(this);
-		}
 
+	    m_um = UpdateManager.getInstance(this);
+		
 		m_updatePref = (UpdatePreference) findPreference(KEY_UPDATE);
-		checkForUpdate();
+		m_updatePref.setUpdateManager(m_um);
+		
+	    if (!m_um.versionsInitialized()) {
+			checkForUpdate();
+		} else {
+			if (m_um.isUpdateRunning()) {
+				m_um.showProgress();
+			}
+			m_newVersion = m_um.getUpdateAvailable();
+			if (null != m_newVersion) {
+				m_updatePref.setEnabled(true);
+				m_updatePref.setSummary(getString(R.string.update_new_version) + " " + m_newVersion);
+			} else {
+				m_updatePref.setEnabled(false);
+				m_updatePref.setSummary(R.string.update_not_found);
+			}
+		}
 
 		Preference p = findPreference(KEY_VERSION);
 		p.setSummary(OMProperties.getVersion(getString(R.string.version_unknown)));
@@ -171,6 +185,7 @@ public class OMParts extends PreferenceActivity {
 		Thread t = new Thread(new Runnable() {
 			@Override
 			public void run() {
+				m_um.initVersions();
 				m_newVersion = m_um.getUpdateAvailable();
 				Message m = new Message();
 				m.arg1 = (null == m_newVersion)? 0: 1;
