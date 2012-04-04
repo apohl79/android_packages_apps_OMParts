@@ -14,7 +14,7 @@ import android.util.Log;
 public class EventManager extends BroadcastReceiver {
 
 	private static final String TAG = "OMParts.EventManager";
-	private static final long INTERVAL = AlarmManager.INTERVAL_DAY;
+	private static final long INTERVAL = AlarmManager.INTERVAL_HOUR * 3;
 	private static final long START_DELAY = DateUtils.MINUTE_IN_MILLIS * 15;
 	private static final int NOTIFICATION_UPD_ID = 1;
 
