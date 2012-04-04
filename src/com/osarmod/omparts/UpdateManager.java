@@ -23,7 +23,7 @@ public class UpdateManager {
 	public static final String LOCAL_FILE = "osarmod-ota.zip";
 
 	private static UpdateManager m_singleton = null;
-	
+
 	private Context m_ctx = null;
 	private ProgressDialog m_pdlg = null;
 	private WakeLock m_wl = null;
@@ -161,7 +161,7 @@ public class UpdateManager {
 		SharedPreferences prefs = m_ctx.getSharedPreferences("osarmod", Context.MODE_PRIVATE);
 		boolean devbuilds = prefs.getInt(OMParts.KEY_DEVBUILDS, 0) == 1;
 		return SERVER + "tools/changelog.cgi?osarmod_type=" + OMProperties.getOsarmodType() + "&version1="
-			+ m_vinstalled + "&version2=" + (devbuilds? m_vserverDev: m_vserver);
+				+ m_vinstalled + "&version2=" + (devbuilds ? m_vserverDev : m_vserver);
 	}
 
 	public boolean versionsInitialized() {
@@ -172,7 +172,9 @@ public class UpdateManager {
 		m_vinstalled = OMProperties.getVersion("");
 		m_vserver = getVersionFromServer(false);
 		m_vserverDev = getVersionFromServer(true);
-		m_vserverDevBase = getBaseVersion(m_vserverDev);
+		if (null != m_vserverDev) {
+			m_vserverDevBase = getBaseVersion(m_vserverDev);
+		}
 	}
 
 	public String getUpdateAvailable() {
