@@ -135,7 +135,7 @@ public class UpdateManager {
 			SharedPreferences prefs = m_ctx.getSharedPreferences("osarmod", Context.MODE_PRIVATE);
 			boolean devbuilds = prefs.getInt(OMParts.KEY_DEVBUILDS, 0) == 1;
 			String srvPath = SERVER + OMProperties.getOsarmodType() + "/"
-					+ (devbuilds ? REMOTE_FILE_DEV : REMOTE_FILE);
+				+ (isDevVersion(getUpdateAvailable())? REMOTE_FILE_DEV : REMOTE_FILE);
 			String locPath = OMProperties.getSdCard() + "/" + LOCAL_FILE;
 			m_worker = new DownloadThread(m_handler, srvPath, locPath);
 			Thread t = new Thread(m_worker);
@@ -213,6 +213,10 @@ public class UpdateManager {
 		ver2 = ver2.replace("-dev", "");
 		Log.d(TAG, "ver1=" + ver1 + " ver2=" + ver2);
 		return new Integer(ver1) > new Integer(ver2);
+	}
+
+	private static boolean isDevVersion(String v) {
+		return v.contains("-dev");
 	}
 
 	public String getVersionFromServer(boolean devbuilds) {
