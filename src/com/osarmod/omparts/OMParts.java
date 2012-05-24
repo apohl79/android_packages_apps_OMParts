@@ -155,21 +155,21 @@ public class OMParts extends PreferenceActivity {
 			}
 		});
 
-		final CheckBoxPreference cbpSdcard = (CheckBoxPreference) findPreference(KEY_SDCARD);
-		if (OMProperties.getOsarmodType().equals("galaxysmtd-cm9")) {
-			cbpSdcard.setChecked(OMProperties.getSwitchSdCard());
-			cbpSdcard.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
-				@Override
-				public boolean onPreferenceChange(Preference preference, Object newValue) {
-					Boolean b = (Boolean) newValue;
-					OMProperties.setSwitchSdCard(b);
-					cbpSdcard.setChecked(b);
-					return false;
-				}
-			});
-		} else {
-			cbpSdcard.setEnabled(false);
-		}
+		//final CheckBoxPreference cbpSdcard = (CheckBoxPreference) findPreference(KEY_SDCARD);
+		//if (OMProperties.getOsarmodType().equals("galaxysmtd-cm9")) {
+		//	cbpSdcard.setChecked(OMProperties.getSwitchSdCard());
+		//	cbpSdcard.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+		//		@Override
+		//		public boolean onPreferenceChange(Preference preference, Object newValue) {
+		//			Boolean b = (Boolean) newValue;
+		//			OMProperties.setSwitchSdCard(b);
+		//			cbpSdcard.setChecked(b);
+		//			return false;
+		//		}
+		//	});
+		//} else {
+		//	cbpSdcard.setEnabled(false);
+		//}
 		
 		ListPreference blxPref = (ListPreference) findPreference(KEY_BLX);
 		blxPref.setEnabled(Blx.isSupported());

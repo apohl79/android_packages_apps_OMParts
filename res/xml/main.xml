@@ -16,7 +16,6 @@
 	    
 	</PreferenceCategory>
 	<PreferenceCategory android:title="@string/category_notification_title"><CheckBoxPreference android:summary="@string/update_notify_sum" android:title="@string/update_notify_title" android:key="notification" /></PreferenceCategory><PreferenceCategory android:title="@string/category_tuning_title">
-		<CheckBoxPreference android:key="sdcard" android:title="@string/sdcard_title" android:summaryOff="@string/sdcard_summary_off" android:summaryOn="@string/sdcard_summary_on"/>
 		
 		<ListPreference android:title="@string/blx_title" android:key="blx" android:summary="@string/blx_sum" android:dialogTitle="@string/blx_title" android:entries="@array/blx_entries" android:entryValues="@array/blx_values"/>
 	</PreferenceCategory>

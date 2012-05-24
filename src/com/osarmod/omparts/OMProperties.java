@@ -29,8 +29,7 @@ public class OMProperties {
 
 	public static String getSdCard() {
 		String path = "/mnt/sdcard";
-		if ((getOSType().equals("cm7") && SystemProperties.getInt("persist.sys.vold.switchexternal", 1) != 1)
-				|| (getOSType().equals("cm9") && getSwitchSdCard())) {
+		if (SystemProperties.getInt("persist.sys.vold.switchexternal", 1) != 1) {
 			path = "/mnt/emmc";
 		}
 		return path;
