@@ -42,6 +42,13 @@ public class DownloadThread implements Runnable {
 			URL url = new URL(m_serverPath);
 			file = new File(m_localPath);
 
+			// Rename an existing file
+			if (file.exists()) {
+				File backup = new File(m_localPath + ".last.zip");
+				file.renameTo(backup);
+				file = new File(m_localPath);
+			}
+
 			URLConnection con = url.openConnection();
 			int len = con.getContentLength();
 
