@@ -35,7 +35,6 @@ public class UpdateManager {
 	String m_vinstalled = null;
 	String m_vserver = null;
 	String m_vserverDev = null;
-	String m_vserverDevBase = null;
 
 	public UpdateManager(Context context) {
 		Log.d(TAG, "UpdateManager created");
@@ -172,47 +171,18 @@ public class UpdateManager {
 		m_vinstalled = OMProperties.getVersion("");
 		m_vserver = getVersionFromServer(false);
 		m_vserverDev = getVersionFromServer(true);
-		if (null != m_vserverDev) {
-			m_vserverDevBase = getBaseVersion(m_vserverDev);
-		}
 	}
 
 	public String getUpdateAvailable() {
 		SharedPreferences prefs = m_ctx.getSharedPreferences("osarmod", Context.MODE_PRIVATE);
 		boolean devbuilds = prefs.getInt(OMParts.KEY_DEVBUILDS, 0) == 1;
+		String vserver = devbuilds ? m_vserverDev : m_vserver;
 
-		if (null == m_vserver || (devbuilds && null == m_vserverDev)) {
-			return null;
-		}
-
-		String checkVersion = m_vserver;
-		if (devbuilds) {
-			if (isNewerVersion(m_vserver, m_vserverDevBase)) {
-				return m_vserver;
-			} else {
-				checkVersion = m_vserverDev;
-			}
-		}
-
-		if (isNewerVersion(checkVersion, m_vinstalled)) {
-			return checkVersion;
+		if (null != vserver && !m_vinstalled.equals(vserver)) {
+			return vserver;
 		}
 
 		return null;
-	}
-
-	private static String getBaseVersion(String v) {
-		String parts[] = v.split("-");
-		return parts[0];
-	}
-
-	private static boolean isNewerVersion(String ver1, String ver2) {
-		ver1 = ver1.replace(".", "");
-		ver1 = ver1.replace("-dev", "");
-		ver2 = ver2.replace(".", "");
-		ver2 = ver2.replace("-dev", "");
-		Log.d(TAG, "ver1=" + ver1 + " ver2=" + ver2);
-		return new Integer(ver1) > new Integer(ver2);
 	}
 
 	private static boolean isDevVersion(String v) {
@@ -224,9 +194,9 @@ public class UpdateManager {
 		String serverVersion = null;
 		try {
 			if (devbuilds) {
-				url = new URL(SERVER + OMProperties.getOsarmodType() + "/VERSION_DEV");
+				url = new URL(SERVER + OMProperties.getOsarmodType() + "/version_dev");
 			} else {
-				url = new URL(SERVER + OMProperties.getOsarmodType() + "/VERSION");
+				url = new URL(SERVER + OMProperties.getOsarmodType() + "/version");
 			}
 			Log.d(TAG, "getVersionFromServer: Reading version from " + url);
 			HttpURLConnection con = (HttpURLConnection) url.openConnection();
