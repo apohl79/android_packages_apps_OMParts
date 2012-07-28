@@ -28,9 +28,17 @@ public class OMProperties {
 	}
 
 	public static String getSdCard() {
-		String path = "/mnt/sdcard";
-		if (SystemProperties.getInt("persist.sys.vold.switchexternal", 1) != 1) {
+		String path;
+		if (getDevice().equals("galaxysmtd")) { // emmc as default for the galaxys
 			path = "/mnt/emmc";
+			if (SystemProperties.getInt("persist.sys.vold.switchexternal", 1) == 1) {
+				path = "/mnt/sdcard";
+			}
+		} else {
+			path = "/mnt/sdcard";
+			if (SystemProperties.getInt("persist.sys.vold.switchexternal", 1) != 1) {
+				path = "/mnt/emmc";
+			}
 		}
 		return path;
 	}
