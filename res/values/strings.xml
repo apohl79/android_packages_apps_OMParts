@@ -9,6 +9,7 @@
     <string name="update_yes">Update Now</string>
     <string name="update_no">Cancel</string>
     <string name="update_inst">Install ROM update?</string>
+    <string name="update_inst_wipe">WARNING: THIS UPDATE WILL WIPE YOUR PHONE!\n\nInstall ROM update?</string>
     <string name="update_not_found">The ROM is up to date.</string>
     <string name="update_server_error">Server communication error</string>
     <string name="update_new_version">New version available:</string>

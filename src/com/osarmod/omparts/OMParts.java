@@ -31,6 +31,7 @@ public class OMParts extends PreferenceActivity {
 	private UpdatePreference m_updatePref = null;
 	private UpdateManager m_um = null;
 	private String m_newVersion = null;
+	private boolean m_wipe = false;
 	
 	final Handler m_handler = new Handler() {
 		public void handleMessage(Message m) {
@@ -187,6 +188,11 @@ public class OMParts extends PreferenceActivity {
 			public void run() {
 				m_um.initVersions();
 				m_newVersion = m_um.getUpdateAvailable();
+				m_wipe = m_um.isWipeUpdate();
+				// set pref text to wipe msg if um detects wipe update
+				if (m_wipe) {
+					m_updatePref.setWipeMessage();
+				}
 				Message m = new Message();
 				m.arg1 = (null == m_newVersion)? 0: 1;
 				m_handler.sendMessage(m);

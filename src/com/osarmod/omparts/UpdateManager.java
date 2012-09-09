@@ -35,6 +35,8 @@ public class UpdateManager {
 	String m_vinstalled = null;
 	String m_vserver = null;
 	String m_vserverDev = null;
+	boolean m_wipe = false;
+	boolean m_wipeDev = false;
 
 	public UpdateManager(Context context) {
 		Log.d(TAG, "UpdateManager created");
@@ -169,8 +171,10 @@ public class UpdateManager {
 
 	public void initVersions() {
 		m_vinstalled = OMProperties.getVersion("");
-		m_vserver = getVersionFromServer(false);
-		m_vserverDev = getVersionFromServer(true);
+		m_vserver = getVersionRemote(false);
+		m_vserverDev = getVersionRemote(true);
+		m_wipe = isWipeUpdateRemote(false);
+		m_wipeDev = isWipeUpdateRemote(true);
 	}
 
 	public String getUpdateAvailable() {
@@ -185,26 +189,43 @@ public class UpdateManager {
 		return null;
 	}
 
-	public String getVersionFromServer(boolean devbuilds) {
+	public boolean isWipeUpdate() {
+		SharedPreferences prefs = m_ctx.getSharedPreferences("osarmod", Context.MODE_PRIVATE);
+		boolean devbuilds = prefs.getInt(OMParts.KEY_DEVBUILDS, 0) == 1;
+		return (devbuilds ? m_wipeDev : m_wipe);
+	}
+
+	public boolean isWipeUpdateRemote(boolean devbuilds) {
+		String wipe_url = SERVER + OMProperties.getOsarmodType() + 
+			(devbuilds ? "/wipe_dev" : "/wipe");
+		String wipe = getFileFromServer(wipe_url);
+		return (null != wipe ? wipe.equals("1") : false);
+	}
+
+	public String getVersionRemote(boolean devbuilds) {
+		String vers_url = SERVER + OMProperties.getOsarmodType() + 
+			(devbuilds ? "/version_dev" : "/version");
+		String serverVersion = getFileFromServer(vers_url);
+		return serverVersion;
+	}
+
+	public String getFileFromServer(String purl) {
 		URL url;
-		String serverVersion = null;
+		String content = null;
 		try {
-			if (devbuilds) {
-				url = new URL(SERVER + OMProperties.getOsarmodType() + "/version_dev");
-			} else {
-				url = new URL(SERVER + OMProperties.getOsarmodType() + "/version");
-			}
-			Log.d(TAG, "getVersionFromServer: Reading version from " + url);
+			url = new URL(purl);
+			Log.d(TAG, "getFileFromServer: Reading file " + url);
 			HttpURLConnection con = (HttpURLConnection) url.openConnection();
 			con.setRequestMethod("GET");
 			con.connect();
 			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-			serverVersion = in.readLine();
+			content = in.readLine();
 			in.close();
+			Log.e(TAG, " => " + content);
 		} catch (Exception e) {
-			Log.e(TAG, "getVersionFromServer failed: " + e.getMessage());
+			Log.e(TAG, "getFileFromServer failed: " + e.getMessage());
 		}
-		return serverVersion;
+		return content;
 	}
 
 }

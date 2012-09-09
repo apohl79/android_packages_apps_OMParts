@@ -22,6 +22,10 @@ public class UpdatePreference extends DialogPreference {
 		m_um = um;
 	}
 
+	public void setWipeMessage() {
+		setDialogMessage(R.string.update_inst_wipe);
+	}
+
 	@Override
 	public void onClick(DialogInterface dialog, int which) {
 		if (DialogInterface.BUTTON_POSITIVE == which) {

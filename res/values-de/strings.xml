@@ -8,6 +8,7 @@
     <string name="update_yes">Jetzt Aktualisieren</string>
     <string name="update_no">Abbrechen</string>
     <string name="update_inst">ROM Aktualisierung installieren?</string>
+    <string name="update_inst_wipe">WARNUNG: DIESES UPDATE SETZT DAS TELEFON AUF WERKSEINSTELLUNGEN ZURÜCK!\n\nROM Aktualisierung installieren?</string>
     <string name="update_not_found">Das ROM ist auf dem neusten Stand.</string>
     <string name="update_server_error">Fehler bei der Serverkommunikation</string>
     <string name="update_new_version">Neue Version verfügbar:</string>
