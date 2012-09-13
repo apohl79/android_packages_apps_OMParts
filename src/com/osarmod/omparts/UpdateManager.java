@@ -13,14 +13,17 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
+import android.os.SystemProperties;
 import android.util.Log;
 
 public class UpdateManager {
 	private static final String TAG = "OMParts.UpdateManager";
-	public static final String SERVER = "http://android.diepohls.com/";
-	public static final String REMOTE_FILE = "latest";
-	public static final String REMOTE_FILE_DEV = "latest_dev";
-	public static final String LOCAL_FILE = "osarmod-ota.zip";
+	public static String SERVER = "http://android.diepohls.com/";
+	public static String REMOTE_FILE = "latest";
+	public static String REMOTE_FILE_DEV = "latest_dev";
+	public static String VERSION_FILE = "version";
+	public static String VERSION_FILE_DEV = "version_dev";
+	public static String LOCAL_FILE = "osarmod-ota.zip";
 
 	private static UpdateManager m_singleton = null;
 
@@ -41,6 +44,11 @@ public class UpdateManager {
 	public UpdateManager(Context context) {
 		Log.d(TAG, "UpdateManager created");
 		m_ctx = context;
+		SERVER = SystemProperties.get("ro.osarmod.ota.server", SERVER);
+		REMOTE_FILE = SystemProperties.get("ro.osarmod.ota.remote_file", REMOTE_FILE);
+		REMOTE_FILE_DEV = SystemProperties.get("ro.osarmod.ota.remote_file_dev", REMOTE_FILE_DEV);
+		VERSION_FILE = SystemProperties.get("ro.osarmod.ota.version_file", VERSION_FILE);
+		VERSION_FILE_DEV = SystemProperties.get("ro.osarmod.ota.version_file_dev", VERSION_FILE_DEV);
 	}
 
 	public static UpdateManager getInstance(Context context) {
@@ -203,8 +211,8 @@ public class UpdateManager {
 	}
 
 	public String getVersionRemote(boolean devbuilds) {
-		String vers_url = SERVER + OMProperties.getOsarmodType() + 
-			(devbuilds ? "/version_dev" : "/version");
+		String vers_url = SERVER + OMProperties.getOsarmodType() + "/" +
+			(devbuilds ? VERSION_FILE_DEV : VERSION_FILE);
 		String serverVersion = getFileFromServer(vers_url);
 		return serverVersion;
 	}
