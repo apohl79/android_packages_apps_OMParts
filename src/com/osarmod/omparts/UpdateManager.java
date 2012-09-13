@@ -23,6 +23,8 @@ public class UpdateManager {
 	public static String REMOTE_FILE_DEV = "latest_dev";
 	public static String VERSION_FILE = "version";
 	public static String VERSION_FILE_DEV = "version_dev";
+	public static String WIPE_FILE = "wipe";
+	public static String WIPE_FILE_DEV = "wipe_dev";
 	public static String LOCAL_FILE = "osarmod-ota.zip";
 
 	private static UpdateManager m_singleton = null;
@@ -49,6 +51,8 @@ public class UpdateManager {
 		REMOTE_FILE_DEV = SystemProperties.get("ro.osarmod.ota.remote_file_dev", REMOTE_FILE_DEV);
 		VERSION_FILE = SystemProperties.get("ro.osarmod.ota.version_file", VERSION_FILE);
 		VERSION_FILE_DEV = SystemProperties.get("ro.osarmod.ota.version_file_dev", VERSION_FILE_DEV);
+		WIPE_FILE = SystemProperties.get("ro.osarmod.ota.wipe_file", WIPE_FILE);
+		WIPE_FILE_DEV = SystemProperties.get("ro.osarmod.ota.wipe_file_dev", WIPE_FILE_DEV);
 	}
 
 	public static UpdateManager getInstance(Context context) {
@@ -204,8 +208,8 @@ public class UpdateManager {
 	}
 
 	public boolean isWipeUpdateRemote(boolean devbuilds) {
-		String wipe_url = SERVER + OMProperties.getOsarmodType() + 
-			(devbuilds ? "/wipe_dev" : "/wipe");
+		String wipe_url = SERVER + OMProperties.getOsarmodType() + "/" +
+			(devbuilds ? WIPE_FILE_DEV : WIPE_FILE);
 		String wipe = getFileFromServer(wipe_url);
 		return (null != wipe ? wipe.equals("1") : false);
 	}
