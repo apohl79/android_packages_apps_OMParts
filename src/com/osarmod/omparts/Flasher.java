@@ -3,6 +3,8 @@ package com.osarmod.omparts;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+import android.content.Context;
+import android.os.PowerManager;
 import android.util.Log;
 
 public class Flasher {
@@ -27,13 +29,12 @@ public class Flasher {
 		return path;
 	}
 
-	public boolean flashOtaPackage() {
+	public boolean flashOtaPackage(Context ctx) {
 		// we need root permissions now
 		Process p;
 		boolean success = false;
 		try {
-			p = Runtime.getRuntime().exec("su");
-			Log.v(TAG, "Got root access");
+			p = Runtime.getRuntime().exec("sh");
 			// create command file for recovery
 			DataOutputStream out = new DataOutputStream(p.getOutputStream());
 			out.writeBytes("echo \"--wipe_cache\">/cache/recovery/command\n");
@@ -44,12 +45,14 @@ public class Flasher {
 				Thread.sleep(1500);
 			} catch (InterruptedException e) {
 			}
-			out.writeBytes("reboot recovery\n");
+			// out.writeBytes("reboot recovery\n");
 			// out.writeBytes("exit\n");
-			out.flush();
+			out.flush();                        // Trigger the reboot                                                                                     
+            PowerManager powerManager = (PowerManager) ctx.getSystemService(Context.POWER_SERVICE);
+            powerManager.reboot("recovery");			
 			success = true;
 		} catch (IOException e1) {
-			Log.e(TAG, "su failed: " + e1.getMessage());
+			Log.e(TAG, "sh failed: " + e1.getMessage());
 		}
 		return success;
 	}

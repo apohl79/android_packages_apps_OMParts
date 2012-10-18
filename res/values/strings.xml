@@ -15,7 +15,7 @@
     <string name="update_new_version">New version available:</string>
     <string name="update_downloading">Downloading update...</string>
     <string name="update_dl_failed">Download failed! Please try again later!</string>
-    <string name="update_su_failed">Failed to accuire root permissions!</string>
+    <string name="update_flash_failed">Failed to flash ROM update!</string>
     <string name="changelog_sum">Show the list of changes</string>
     <string name="update_available">ROM update available</string>
     <string name="update_notify_title">Notification</string>

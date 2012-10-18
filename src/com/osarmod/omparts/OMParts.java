@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,6 +16,8 @@ import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.util.Log;
+
+import com.osarmod.omparts.receivers.UpdateReceiver;
 
 public class OMParts extends PreferenceActivity {
 	private static final String TAG = "OMParts";
@@ -32,12 +33,13 @@ public class OMParts extends PreferenceActivity {
 	private UpdateManager m_um = null;
 	private String m_newVersion = null;
 	private boolean m_wipe = false;
-	
+
 	final Handler m_handler = new Handler() {
 		public void handleMessage(Message m) {
 			if (m.arg1 == 1) {
 				m_updatePref.setEnabled(true);
-				m_updatePref.setSummary(getString(R.string.update_new_version) + " " + m_newVersion);
+				m_updatePref.setSummary(getString(R.string.update_new_version)
+						+ " " + m_newVersion);
 			} else {
 				m_updatePref.setEnabled(false);
 				m_updatePref.setSummary(R.string.update_not_found);
@@ -45,46 +47,42 @@ public class OMParts extends PreferenceActivity {
 		}
 	};
 
-	@Override  
+	@Override
 	protected void onPause() {
-		Log.d(TAG, "onPause called");  
+		Log.d(TAG, "onPause called");
 		super.onPause();
 		m_um.dismissProgress();
-	}  
+	}
 
-	@Override  
+	@Override
 	protected void onResume() {
-		Log.d(TAG, "onResume called");  
+		Log.d(TAG, "onResume called");
 		super.onResume();
 		m_um.showProgress();
-	}  
+	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		// Allow a network connection to be established from the main thread. We
-		// need this from HC and ICS on.
-		StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitNetwork().build();
-		StrictMode.setThreadPolicy(policy);
-
 		addPreferencesFromResource(R.xml.main);
 
-	    m_um = UpdateManager.getInstance(this);
-		
+		m_um = UpdateManager.getInstance(this);
+
 		m_updatePref = (UpdatePreference) findPreference(KEY_UPDATE);
 		m_updatePref.setUpdateManager(m_um);
-		
-	    if (!m_um.versionsInitialized()) {
+
+		if (!m_um.updateCheckDone()) {
 			checkForUpdate();
 		} else {
 			if (m_um.isUpdateRunning()) {
 				m_um.showProgress();
 			}
-			m_newVersion = m_um.getUpdateAvailable();
+			m_newVersion = m_um.getUpdateInfo().getUpdateVersion();
 			if (null != m_newVersion) {
 				m_updatePref.setEnabled(true);
-				m_updatePref.setSummary(getString(R.string.update_new_version) + " " + m_newVersion);
+				m_updatePref.setSummary(getString(R.string.update_new_version)
+						+ " " + m_newVersion);
 			} else {
 				m_updatePref.setEnabled(false);
 				m_updatePref.setSummary(R.string.update_not_found);
@@ -92,9 +90,9 @@ public class OMParts extends PreferenceActivity {
 		}
 
 		Preference p = findPreference(KEY_VERSION);
-		p.setSummary(OMProperties.getVersion(getString(R.string.version_unknown)));
+		p.setSummary(OMProperties
+				.getVersion(getString(R.string.version_unknown)));
 		p.setOnPreferenceClickListener(new OnPreferenceClickListener() {
-			@Override
 			public boolean onPreferenceClick(Preference preference) {
 				checkForUpdate();
 				return false;
@@ -103,9 +101,9 @@ public class OMParts extends PreferenceActivity {
 
 		p = findPreference(KEY_CHANGELOG);
 		p.setOnPreferenceClickListener(new OnPreferenceClickListener() {
-			@Override
 			public boolean onPreferenceClick(Preference preference) {
-				Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(m_um.getChangelogUrl()));
+				Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(m_um
+						.getUpdateInfo().getChangelogUrl()));
 				startActivity(i);
 				return true;
 			}
@@ -113,65 +111,54 @@ public class OMParts extends PreferenceActivity {
 
 		final Context ctx = this;
 
-		SharedPreferences prefs = getSharedPreferences("osarmod", Context.MODE_PRIVATE);
-		
+		SharedPreferences prefs = getSharedPreferences("osarmod",
+				Context.MODE_PRIVATE);
+
 		boolean notifyme = prefs.getInt(KEY_NOTIFICATION, 1) == 1;
 		final CheckBoxPreference cbpNotify = (CheckBoxPreference) findPreference(KEY_NOTIFICATION);
 		cbpNotify.setChecked(notifyme);
-		cbpNotify.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
-			@Override
-			public boolean onPreferenceChange(Preference preference, Object newValue) {
-				Boolean b = (Boolean) newValue;
-				int val = b ? 1 : 0;
-				SharedPreferences prefs = getSharedPreferences("osarmod", Context.MODE_PRIVATE);
-				Editor e = prefs.edit();
-				e.putInt(KEY_NOTIFICATION, val);
-				e.commit();
-				if (b) {
-					Log.e(TAG, "Starting update checks.");
-					EventManager.startUpdateChecks(ctx);
-				} else {
-					Log.e(TAG, "Stopping update checks.");
-					EventManager.stopUpdateChecks(ctx);
-				}
-				cbpNotify.setChecked(b);
-				return false;
-			}
-		});
+		cbpNotify
+				.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+					public boolean onPreferenceChange(Preference preference,
+							Object newValue) {
+						Boolean b = (Boolean) newValue;
+						int val = b ? 1 : 0;
+						SharedPreferences prefs = getSharedPreferences(
+								"osarmod", Context.MODE_PRIVATE);
+						Editor e = prefs.edit();
+						e.putInt(KEY_NOTIFICATION, val);
+						e.commit();
+						if (b) {
+							Log.e(TAG, "Starting update checks.");
+							UpdateReceiver.startUpdateChecks(ctx);
+						} else {
+							Log.e(TAG, "Stopping update checks.");
+							UpdateReceiver.stopUpdateChecks(ctx);
+						}
+						cbpNotify.setChecked(b);
+						return false;
+					}
+				});
 
 		boolean devbuilds = prefs.getInt(KEY_DEVBUILDS, 0) == 1;
 		final CheckBoxPreference cbpDevbuilds = (CheckBoxPreference) findPreference(KEY_DEVBUILDS);
 		cbpDevbuilds.setChecked(devbuilds);
-		cbpDevbuilds.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
-			@Override
-			public boolean onPreferenceChange(Preference preference, Object newValue) {
-				Boolean b = (Boolean) newValue;
-				cbpDevbuilds.setChecked(b);
-				int val = b ? 1 : 0;
-				SharedPreferences prefs = getSharedPreferences("osarmod", Context.MODE_PRIVATE);
-				Editor e = prefs.edit();
-				e.putInt(KEY_DEVBUILDS, val);
-				e.commit();
-				return false;
-			}
-		});
+		cbpDevbuilds
+				.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+					public boolean onPreferenceChange(Preference preference,
+							Object newValue) {
+						Boolean b = (Boolean) newValue;
+						cbpDevbuilds.setChecked(b);
+						int val = b ? 1 : 0;
+						SharedPreferences prefs = getSharedPreferences(
+								"osarmod", Context.MODE_PRIVATE);
+						Editor e = prefs.edit();
+						e.putInt(KEY_DEVBUILDS, val);
+						e.commit();
+						return false;
+					}
+				});
 
-		//final CheckBoxPreference cbpSdcard = (CheckBoxPreference) findPreference(KEY_SDCARD);
-		//if (OMProperties.getOsarmodType().equals("galaxysmtd-cm9")) {
-		//	cbpSdcard.setChecked(OMProperties.getSwitchSdCard());
-		//	cbpSdcard.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
-		//		@Override
-		//		public boolean onPreferenceChange(Preference preference, Object newValue) {
-		//			Boolean b = (Boolean) newValue;
-		//			OMProperties.setSwitchSdCard(b);
-		//			cbpSdcard.setChecked(b);
-		//			return false;
-		//		}
-		//	});
-		//} else {
-		//	cbpSdcard.setEnabled(false);
-		//}
-		
 		ListPreference blxPref = (ListPreference) findPreference(KEY_BLX);
 		blxPref.setEnabled(Blx.isSupported());
 		if (Blx.isSupported()) {
@@ -184,17 +171,17 @@ public class OMParts extends PreferenceActivity {
 		m_updatePref.setEnabled(false);
 		m_updatePref.setSummary(R.string.update_check);
 		Thread t = new Thread(new Runnable() {
-			@Override
 			public void run() {
-				m_um.initVersions();
-				m_newVersion = m_um.getUpdateAvailable();
-				m_wipe = m_um.isWipeUpdate();
+				Log.d(TAG, "Checking for update...");
+				m_um.checkForUpdate();
+				m_newVersion = m_um.getUpdateInfo().getUpdateVersion();
+				m_wipe = m_um.getUpdateInfo().isWipeUpdate();
 				// set pref text to wipe msg if um detects wipe update
 				if (m_wipe) {
 					m_updatePref.setWipeMessage();
 				}
 				Message m = new Message();
-				m.arg1 = (null == m_newVersion)? 0: 1;
+				m.arg1 = (null == m_newVersion) ? 0 : 1;
 				m_handler.sendMessage(m);
 			}
 		});

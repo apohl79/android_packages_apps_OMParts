@@ -20,7 +20,6 @@ public class Blx implements OnPreferenceChangeListener {
 		m_ctx = ctx;
 	}
 	
-	@Override
 	public boolean onPreferenceChange(Preference pref, Object oval) {
 		String sval = (String) oval;
 		SharedPreferences prefs = m_ctx.getSharedPreferences("osarmod", Context.MODE_PRIVATE);

@@ -1,10 +1,5 @@
 package com.osarmod.omparts;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -13,18 +8,10 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
-import android.os.SystemProperties;
 import android.util.Log;
 
 public class UpdateManager {
 	private static final String TAG = "OMParts.UpdateManager";
-	public static String SERVER = "http://android.diepohls.com/";
-	public static String REMOTE_FILE = "latest";
-	public static String REMOTE_FILE_DEV = "latest_dev";
-	public static String VERSION_FILE = "version";
-	public static String VERSION_FILE_DEV = "version_dev";
-	public static String WIPE_FILE = "wipe";
-	public static String WIPE_FILE_DEV = "wipe_dev";
 	public static String LOCAL_FILE = "osarmod-ota.zip";
 
 	private static UpdateManager m_singleton = null;
@@ -35,24 +22,11 @@ public class UpdateManager {
 	private int m_lastProgress = 0;
 	private boolean m_updateStarted = false;
 	private DownloadThread m_worker = null;
-
-	// Version strings
-	String m_vinstalled = null;
-	String m_vserver = null;
-	String m_vserverDev = null;
-	boolean m_wipe = false;
-	boolean m_wipeDev = false;
+	private UpdateInfo m_updateInfo = null;
 
 	public UpdateManager(Context context) {
 		Log.d(TAG, "UpdateManager created");
 		m_ctx = context;
-		SERVER = SystemProperties.get("ro.osarmod.ota.server", SERVER);
-		REMOTE_FILE = SystemProperties.get("ro.osarmod.ota.remote_file", REMOTE_FILE);
-		REMOTE_FILE_DEV = SystemProperties.get("ro.osarmod.ota.remote_file_dev", REMOTE_FILE_DEV);
-		VERSION_FILE = SystemProperties.get("ro.osarmod.ota.version_file", VERSION_FILE);
-		VERSION_FILE_DEV = SystemProperties.get("ro.osarmod.ota.version_file_dev", VERSION_FILE_DEV);
-		WIPE_FILE = SystemProperties.get("ro.osarmod.ota.wipe_file", WIPE_FILE);
-		WIPE_FILE_DEV = SystemProperties.get("ro.osarmod.ota.wipe_file_dev", WIPE_FILE_DEV);
 	}
 
 	public static UpdateManager getInstance(Context context) {
@@ -89,12 +63,12 @@ public class UpdateManager {
 					m_pdlg.setMessage("Flashing...");
 				}
 				Flasher f = new Flasher(LOCAL_FILE);
-				if (!f.flashOtaPackage()) {
+				if (!f.flashOtaPackage(m_ctx)) {
 					if (null != m_pdlg) {
 						m_pdlg.hide();
 					}
 					builder = new AlertDialog.Builder(m_ctx);
-					builder.setMessage(m_ctx.getString(R.string.update_su_failed))
+					builder.setMessage(m_ctx.getString(R.string.update_flash_failed))
 							.setNeutralButton("OK", null).setCancelable(false);
 					builder.create();
 					m_wl.release();
@@ -147,8 +121,8 @@ public class UpdateManager {
 
 			SharedPreferences prefs = m_ctx.getSharedPreferences("osarmod", Context.MODE_PRIVATE);
 			boolean devbuilds = prefs.getInt(OMParts.KEY_DEVBUILDS, 0) == 1;
-			String srvPath = SERVER + OMProperties.getOsarmodType() + "/"
-				+ (devbuilds ? REMOTE_FILE_DEV : REMOTE_FILE);
+			String srvPath = UpdateInfo.SERVER + OMProperties.getOsarmodType() + "/"
+				+ (devbuilds ? UpdateInfo.REMOTE_FILE_DEV : UpdateInfo.REMOTE_FILE);
 			String locPath = OMProperties.getSdCard() + "/" + LOCAL_FILE;
 			m_worker = new DownloadThread(m_handler, srvPath, locPath);
 			Thread t = new Thread(m_worker);
@@ -169,75 +143,18 @@ public class UpdateManager {
 	public boolean isUpdateRunning() {
 		return m_updateStarted;
 	}
-
-	public String getChangelogUrl() {
-		SharedPreferences prefs = m_ctx.getSharedPreferences("osarmod", Context.MODE_PRIVATE);
-		boolean devbuilds = prefs.getInt(OMParts.KEY_DEVBUILDS, 0) == 1;
-		return SERVER + "tools/changelog.cgi?osarmod_type=" + OMProperties.getOsarmodType() + "&version1="
-				+ m_vinstalled + "&version2=" + (devbuilds ? m_vserverDev : m_vserver);
+	
+	public boolean updateCheckDone() {
+		return null != m_updateInfo;
 	}
-
-	public boolean versionsInitialized() {
-		return null != m_vinstalled;
-	}
-
-	public void initVersions() {
-		m_vinstalled = OMProperties.getVersion("");
-		m_vserver = getVersionRemote(false);
-		m_vserverDev = getVersionRemote(true);
-		m_wipe = isWipeUpdateRemote(false);
-		m_wipeDev = isWipeUpdateRemote(true);
-	}
-
-	public String getUpdateAvailable() {
-		SharedPreferences prefs = m_ctx.getSharedPreferences("osarmod", Context.MODE_PRIVATE);
-		boolean devbuilds = prefs.getInt(OMParts.KEY_DEVBUILDS, 0) == 1;
-		String vserver = devbuilds ? m_vserverDev : m_vserver;
-
-		if (null != vserver && !m_vinstalled.equals(vserver)) {
-			return vserver;
+	
+	public void checkForUpdate() {
+		if (null == m_updateInfo) {
+			m_updateInfo = new UpdateInfo(m_ctx);
 		}
-
-		return null;
 	}
-
-	public boolean isWipeUpdate() {
-		SharedPreferences prefs = m_ctx.getSharedPreferences("osarmod", Context.MODE_PRIVATE);
-		boolean devbuilds = prefs.getInt(OMParts.KEY_DEVBUILDS, 0) == 1;
-		return (devbuilds ? m_wipeDev : m_wipe);
+	
+	public UpdateInfo getUpdateInfo() {
+		return m_updateInfo;
 	}
-
-	public boolean isWipeUpdateRemote(boolean devbuilds) {
-		String wipe_url = SERVER + OMProperties.getOsarmodType() + "/" +
-			(devbuilds ? WIPE_FILE_DEV : WIPE_FILE);
-		String wipe = getFileFromServer(wipe_url);
-		return (null != wipe ? wipe.equals("1") : false);
-	}
-
-	public String getVersionRemote(boolean devbuilds) {
-		String vers_url = SERVER + OMProperties.getOsarmodType() + "/" +
-			(devbuilds ? VERSION_FILE_DEV : VERSION_FILE);
-		String serverVersion = getFileFromServer(vers_url);
-		return serverVersion;
-	}
-
-	public String getFileFromServer(String purl) {
-		URL url;
-		String content = null;
-		try {
-			url = new URL(purl);
-			Log.d(TAG, "getFileFromServer: Reading file " + url);
-			HttpURLConnection con = (HttpURLConnection) url.openConnection();
-			con.setRequestMethod("GET");
-			con.connect();
-			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-			content = in.readLine();
-			in.close();
-			Log.e(TAG, " => " + content);
-		} catch (Exception e) {
-			Log.e(TAG, "getFileFromServer failed: " + e.getMessage());
-		}
-		return content;
-	}
-
 }
