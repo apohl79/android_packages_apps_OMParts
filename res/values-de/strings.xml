@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">OSARMOD Einstellungen</string>
+    <string name="app_name">IONIX Einstellungen</string>
 
     <string name="category_version_title">Version</string>
     <string name="version_unknown">Unbekannt</string>
