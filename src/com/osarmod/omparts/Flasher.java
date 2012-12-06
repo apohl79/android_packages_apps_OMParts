@@ -15,20 +15,9 @@ public class Flasher {
 	
 	public Flasher(String file) {
 		m_file = file;
-		m_flashPath = getFlashPath();
+		m_flashPath = OMProperties.getFlashPath() + m_file;
 	}
 	
-	private String getFlashPath() {
-		String path = null;
-		String device = OMProperties.getDevice();
-		if (device.equals("galaxysmtd")) {
-			path = "/sdcard/" + m_file;
-		} else if (device.equals("wingray")) {
-			path = "/data/media/" + m_file;
-		}
-		return path;
-	}
-
 	public boolean flashOtaPackage(Context ctx) {
 		// we need root permissions now
 		Process p;

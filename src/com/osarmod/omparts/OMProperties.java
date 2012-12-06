@@ -29,4 +29,8 @@ public class OMProperties {
 	public static String getSdCard() {
 		return SystemProperties.get("ro.osarmod.ota.download", "/mnt/sdcard");
 	}
+
+	public static String getFlashPath() {
+		return SystemProperties.get("ro.osarmod.ota.flashpath", "/sdcard/0/");
+	}
 }
