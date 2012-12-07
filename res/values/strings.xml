@@ -3,7 +3,7 @@
     <string name="app_name">IONIX Settings</string>
 
     <string name="category_version_title">Version</string>
-    <string name="version_title_head">ROM Version</string>
+    <string name="version_title_head">Version</string>
     <string name="version_unknown">Unknown</string>
     <string name="update_title_head">Update</string>
     <string name="update_yes">Update Now</string>
