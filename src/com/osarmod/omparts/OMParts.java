@@ -28,6 +28,7 @@ public class OMParts extends PreferenceActivity {
 	public static final String KEY_SDCARD = "sdcard";
 	public static final String KEY_DEVBUILDS = "devbuilds";
 	public static final String KEY_BLX = "blx";
+	public static final String KEY_TUNING = "tuning";
 
 	private UpdatePreference m_updatePref = null;
 	private UpdateManager m_um = null;
@@ -160,10 +161,12 @@ public class OMParts extends PreferenceActivity {
 				});
 
 		ListPreference blxPref = (ListPreference) findPreference(KEY_BLX);
-		blxPref.setEnabled(Blx.isSupported());
 		if (Blx.isSupported()) {
 			blxPref.setValue(prefs.getString(KEY_BLX, "96"));
 			blxPref.setOnPreferenceChangeListener(new Blx(this));
+		} else {
+			getPreferenceScreen().removePreference(blxPref);
+			getPreferenceScreen().removePreference(findPreference(KEY_TUNING));
 		}
 	}
 

@@ -15,7 +15,7 @@
 	    <Preference android:key="changelog" android:title="ChangeLog" android:summary="@string/changelog_sum"/><CheckBoxPreference android:key="devbuilds" android:summary="@string/devbuilds_sum" android:title="@string/devbuilds_title" />
 	    
 	</PreferenceCategory>
-	<PreferenceCategory android:title="@string/category_notification_title"><CheckBoxPreference android:summary="@string/update_notify_sum" android:title="@string/update_notify_title" android:key="notification" /></PreferenceCategory><PreferenceCategory android:title="@string/category_tuning_title">
+	<PreferenceCategory android:title="@string/category_notification_title"><CheckBoxPreference android:summary="@string/update_notify_sum" android:title="@string/update_notify_title" android:key="notification" /></PreferenceCategory><PreferenceCategory android:title="@string/category_tuning_title" android:key="tuning">
 		
 		<ListPreference android:title="@string/blx_title" android:key="blx" android:summary="@string/blx_sum" android:dialogTitle="@string/blx_title" android:entries="@array/blx_entries" android:entryValues="@array/blx_values"/>
 	</PreferenceCategory>
