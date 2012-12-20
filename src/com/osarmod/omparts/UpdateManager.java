@@ -119,10 +119,7 @@ public class UpdateManager {
 			m_pdlg.setProgress(0);
 			m_pdlg.show();
 
-			SharedPreferences prefs = m_ctx.getSharedPreferences("osarmod", Context.MODE_PRIVATE);
-			boolean devbuilds = prefs.getInt(OMParts.KEY_DEVBUILDS, 0) == 1;
-			String srvPath = UpdateInfo.SERVER + OMProperties.getOsarmodType() + "/"
-				+ (devbuilds ? UpdateInfo.REMOTE_FILE_DEV : UpdateInfo.REMOTE_FILE);
+			String srvPath = m_updateInfo.getRemoteFile();
 			String locPath = OMProperties.getSdCard() + "/" + LOCAL_FILE;
 			m_worker = new DownloadThread(m_handler, srvPath, locPath);
 			Thread t = new Thread(m_worker);
