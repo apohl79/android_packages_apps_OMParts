@@ -73,7 +73,8 @@ public class UpdateReceiver extends BroadcastReceiver {
 					PendingIntent.FLAG_CANCEL_CURRENT);
 
 			Notification n = new Notification.Builder(m_ctx)
-					.setContentTitle("OSARMOD")
+					.setContentTitle(
+							m_ctx.getString(R.string.notification_title))
 					.setContentText(
 							m_ctx.getString(R.string.update_available) + ": "
 									+ version).setContentIntent(pi)

@@ -40,5 +40,6 @@
         <item >80</item>
     </string-array>
     <string name="update_check">Checking for new version...</string>
+    <string name="notification_title">IONIX</string>
     
 </resources>
