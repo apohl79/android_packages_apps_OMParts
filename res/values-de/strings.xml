@@ -17,8 +17,8 @@
     <string name="update_flash_failed">Flashen fehlgeschlagen!</string>
     <string name="changelog_sum">Liste der Änderungen anzeigen</string>
     <string name="update_available">ROM Update verfügbar</string>
-    <string name="update_notify_title">Nofification </string>
-    <string name="update_notify_sum">Zeige eine Notification bei verfügbaren Aktualisierungen an.</string>
+    <string name="update_notify_title">Benachrichtigung</string>
+    <string name="update_notify_sum">Zeige eine Benachrichtigung bei verfügbaren Aktualisierungen an.</string>
     <string name="category_notification_title">Benachrichtigung</string>
     <string name="category_tuning_title">Feineinstellung</string>
     <string name="sdcard_summary_on">Externen SD Karte unter /mnt/sdcard mounten (Neustart erforderlich)</string>
